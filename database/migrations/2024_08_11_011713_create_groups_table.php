@@ -21,8 +21,6 @@ return new class extends Migration
             $table->string('text')->nullable();
             $table->string('song')->nullable();
             $table->boolean('active')->default(true);
-            $table->unsignedBigInteger('church_id');
-            $table->foreign('church_id')->references('id')->on('churches')->onDelete('cascade');
             $table->timestamps();
         });
     }
