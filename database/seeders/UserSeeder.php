@@ -14,8 +14,8 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'name'=>'Angel Rosendo Condori Coaquira',
-            'email'=>'angel.condori@gmail.com',
+            'name'=>'Dynamus Developer Team',
+            'email'=>'dynamus@gmail.com',
             'password'=>bcrypt('12345678'),
         ]);
         User::factory()->count(3)->create();

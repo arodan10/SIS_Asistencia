@@ -1,5 +1,10 @@
 <div class="py-2.5 lg:pr-2.5 lg:pl-0 px-2.5">
-    <header class="flex items-center justify-between p-4 bg-white border-b-4 border-violet-800 rounded-lg">
+    <header class="flex items-center justify-between p-4 bg-white rounded-lg relative shadow-lg">
+        <div class="absolute bottom-0 left-0 flex gap-1 w-full rounded-b-lg overflow-hidden">
+            <div class="w-full h-1 bg-orange-500"></div>
+            <div class="w-full h-1 bg-green-500"></div>
+            <div class="w-full h-1 bg-blue-500"></div>
+        </div>
         <div class="flex items-center">
             <button @click="sidebarOpen=true" class="text-gray-500 focus:outline-none lg:hidden">
                 <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
