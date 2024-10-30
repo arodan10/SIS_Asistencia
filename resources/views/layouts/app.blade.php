@@ -26,15 +26,15 @@
         <div>
             <x-dialog/>
             <x-notifications />
-            <div x-data="{ sidebarOpen: false }" class="flex h-screen">
+            <div x-data="{ sidebarOpen: false }" class="flex h-screen bg-zinc-200">
                 <div :class="sidebarOpen ? 'block' : 'hidden'" @click="sidebarOpen = false" class="fixed inset-0 z-20 transition-opacity bg-black opacity-50 lg:hidden"></div>
                 @livewire('dashboard.sidebar')
                 <div class="flex flex-col flex-1 overflow-hidden">
                     @livewire('dashboard.header')
                     {{-- prueba laravel reverb --}}
                     {{-- <livewire:delivery-history /> --}}
-                    <main class="flex-1 overflow-x-hidden overflow-y-auto bg-indigo-100">
-                        <div class="py-8 mx-auto">
+                    <main class="flex-1 overflow-x-hidden overflow-y-auto">
+                        <div class="p-2.5 mx-auto">
                             {{ $slot }}
                         </div>
                     </main>
