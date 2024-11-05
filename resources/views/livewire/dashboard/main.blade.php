@@ -1,59 +1,57 @@
 @section('header', __('Dashboard'))
 @section('section', __('Dashboard'))
 
-<div class="mx-auto">
-    <div class="">
-        <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
-            <x-app.card>
-                <div class="flex items-center gap-3">
-                    <div class="p-3 bg-green-600 bg-opacity-75 rounded-lg">
-                        <i class="text-white fa-regular fa-face-smile-beam text-2xl"></i>
-                    </div>
-                    <div>
-                        <h5 class="text-lg font-medium text-gray-700">42%</h5>
-                        <div class="text-green-600 font-bold">PRESENTE</div>
-                    </div>
+<div class="flex flex-col gap-4">
+    <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <x-app.card>
+            <div class="flex items-center gap-3">
+                <div class="p-3 bg-green-600 bg-opacity-75 rounded-lg">
+                    <i class="text-white fa-regular fa-face-smile-beam text-2xl"></i>
                 </div>
-            </x-app.card>
-            <x-app.card>
-                <div class="flex items-center gap-3">
-                    <div class="p-3 bg-yellow-500 bg-opacity-75 rounded-lg">
-                        <i class="text-white fa-regular fa-clock text-2xl"></i>
-                    </div>
-
-                    <div>
-                        <h5 class="text-lg font-medium text-gray-700">12%</h5>
-                        <div class="text-yellow-500 font-bold">TARDE</div>
-                    </div>
+                <div>
+                    <h5 class="text-lg font-medium text-gray-700">42%</h5>
+                    <div class="text-green-600 font-bold">PRESENTE</div>
                 </div>
-            </x-app.card>
-
-            <x-app.card>
-                <div class="flex items-center gap-3">
-                    <div class="p-3 bg-red-600 bg-opacity-75 rounded-lg">
-                        <i class="text-white fa-regular fa-face-frown-open text-2xl"></i>
-                    </div>
-
-                    <div>
-                        <h5 class="text-lg font-medium text-gray-700">25%</h5>
-                        <div class="text-red-600 font-bold">FALTA</div>
-                    </div>
+            </div>
+        </x-app.card>
+        <x-app.card>
+            <div class="flex items-center gap-3">
+                <div class="p-3 bg-yellow-500 bg-opacity-75 rounded-lg">
+                    <i class="text-white fa-regular fa-clock text-2xl"></i>
                 </div>
-            </x-app.card>
 
-            <x-app.card>
-                <div class="flex items-center gap-3">
-                    <div class="p-3 bg-violet-700 bg-opacity-75 rounded-lg">
-                        <i class="text-white fa-solid fa-users text-2xl"></i>
-                    </div>
-
-                    <div>
-                        <h5 class="text-lg font-medium text-gray-700">152</h5>
-                        <div class="text-violet-700 font-bold">MIEMBROS</div>
-                    </div>
+                <div>
+                    <h5 class="text-lg font-medium text-gray-700">12%</h5>
+                    <div class="text-yellow-500 font-bold">TARDE</div>
                 </div>
-            </x-app.card>
-        </div>
+            </div>
+        </x-app.card>
+
+        <x-app.card>
+            <div class="flex items-center gap-3">
+                <div class="p-3 bg-red-600 bg-opacity-75 rounded-lg">
+                    <i class="text-white fa-regular fa-face-frown-open text-2xl"></i>
+                </div>
+
+                <div>
+                    <h5 class="text-lg font-medium text-gray-700">25%</h5>
+                    <div class="text-red-600 font-bold">FALTA</div>
+                </div>
+            </div>
+        </x-app.card>
+
+        <x-app.card>
+            <div class="flex items-center gap-3">
+                <div class="p-3 bg-violet-700 bg-opacity-75 rounded-lg">
+                    <i class="text-white fa-solid fa-users text-2xl"></i>
+                </div>
+
+                <div>
+                    <h5 class="text-lg font-medium text-gray-700">152</h5>
+                    <div class="text-violet-700 font-bold">MIEMBROS</div>
+                </div>
+            </div>
+        </x-app.card>
     </div>
 
     <div class="grid md:grid-cols-2 gap-4">

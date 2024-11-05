@@ -19,10 +19,10 @@ class MemberFactory extends Factory
     {
         return [
             'firstname' => $this->faker->firstName(),
-            'lastname' => $this->faker->lastName(),
+            'lastname' => fake()->lastName() . ' ' . fake()->lastName(),
             'document' => $this->faker->numerify('########'),
             'address' => $this->faker->address(),
-            'cellphone' => $this->faker->phoneNumber(),
+            'cellphone' => fake()->numerify('###') . ' ' . fake()->numerify('###') . ' ' . fake()->numerify('###'),
             'email' => $this->faker->email(),
             'birthdate' => $this->faker->date(),
             'baptism' => $this->faker->date(),

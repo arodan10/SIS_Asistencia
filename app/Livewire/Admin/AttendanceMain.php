@@ -32,6 +32,13 @@ class AttendanceMain extends Component
     public $month, $mes;
     public $year, $año;
     public $day, $dia;
+
+    public $meses = [
+        1 => 'ene', 2 => 'feb', 3 => 'mar', 4 => 'abr',
+        5 => 'may', 6 => 'jun', 7 => 'jul', 8 => 'ago',
+        9 => 'sep', 10 => 'oct', 11 => 'nov', 12 => 'dic'
+    ];
+
     public $showModal = false;
 
     public function updatedMonth()
@@ -191,8 +198,12 @@ class AttendanceMain extends Component
         session()->flash('success', 'Asistencias importadas correctamente.');
     }
 
-    public function exportToPdf($group_id = null, $year, $month, $day)
+    public function exportToPdf($group_id, $year, $month, $day)
     {
+        if (!$group_id) {
+            abort(400, 'Seleccione un grupo antes de exportar.');
+        }
+
         // Consulta los miembros, o filtra si se ha pasado un ID específico
         $miembros = Member::where('group_id', $group_id)->get();
 
