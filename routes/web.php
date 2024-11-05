@@ -3,6 +3,7 @@
 use App\Livewire\Admin\AttendanceMain;
 use App\Livewire\Admin\GroupMain;
 use App\Livewire\Admin\MemberMain;
+use App\Livewire\Admin\Roles;
 use App\Livewire\Dashboard\Main;
 use App\Livewire\Web\About;
 use App\Livewire\Web\Blog;
@@ -28,6 +29,7 @@ Route::middleware([
     Route::get('/attendance',AttendanceMain::class)->name('attendance');
     Route::get('/members',MemberMain::class)->name('members');
     Route::get('/groups',GroupMain::class)->name('groups');
+    Route::get('/pagina/seguridad/roles', Roles::class)->middleware('can:admin.roles')->name('admin.roles');
 
     // Route::get('/export/attendances/pdf', [AttendanceMain::class, 'exportToPdf'])->name('attendances.export.pdf');
     // Route::get('/export/attendances/pdf/{group_id?}', [AttendanceMain::class, 'exportToPdf'])->name('attendances.export.pdf');

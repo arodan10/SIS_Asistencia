@@ -4,11 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Permission\Traits\HasRoles;
 
 class Member extends Model
 {
     use HasFactory;
+    use HasRoles;
     protected $guarded = ['id'];
+    protected $guard_name = 'web';
 
     public function group(){
         return $this->belongsTo(Group::class);

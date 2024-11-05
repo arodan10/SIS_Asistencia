@@ -17,7 +17,12 @@ class UserSeeder extends Seeder
             'name'=>'Dynamus Developer Team',
             'email'=>'dynamus@gmail.com',
             'password'=>bcrypt('12345678'),
-        ]);
-        User::factory()->count(3)->create();
+        ])->assignRole('Super-admin');
+
+        $users = User::factory()->count(3)->create();
+
+        foreach ($users as $user) {
+            $user->assignRole('Presidente');
+        }
     }
 }

@@ -16,6 +16,11 @@ class MemberSeeder extends Seeder{
         //Member::orderBy('group_id','asc')->get();
         $groups=Group::all();
         $n=0;
+
+        foreach ($members as $user) {
+            $user->assignRole('Miembro');
+        }
+
         foreach ($groups as $group) {
             $members=Member::where('group_id',$group->id)->skip(0)->take(2)->get();
             $members[0]->update(['position'=>'MAESTRO(A)']);

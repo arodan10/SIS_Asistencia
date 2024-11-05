@@ -4,7 +4,7 @@
         <div class="p-2.5">
             <div class="flex items-center gap-2 justify-center ">
                 <div class="px-1 pt-1 bg-white rounded-lg overflow-hidden">
-                    <img src="assets/img/logo.png" class="w-16">
+                    <img src="/assets/img/logo.png" class="w-16">
                 </div>
                 <div class="flex flex-col gap-1 h-full w-1">
                     <div class="py-2 bg-orange-500"></div>
@@ -18,29 +18,31 @@
             </div>
         </div>
         <nav class="mt-2 px-2 space-y-3">
-            <x-nav-sidebar :active="request()->routeIs('dashboard')"
-                href="{{ route('dashboard') }}">
+            <x-nav-sidebar :active="request()->routeIs('dashboard')" href="{{ route('dashboard') }}">
                 <i class="fa-solid fa-chart-pie fa-fw"></i>
                 <span class="text-sm">Dashboard</span>
             </x-nav-sidebar>
 
-            <x-nav-sidebar :active="request()->routeIs('groups')"
-                href="{{ route('groups') }}">
+            <x-nav-sidebar :active="request()->routeIs('groups')" href="{{ route('groups') }}">
                 <i class="fa-solid fa-cubes fa-fw"></i>
                 <span class="text-sm">Grupos</span>
             </x-nav-sidebar>
 
-            <x-nav-sidebar :active="request()->routeIs('members')"
-                href="{{ route('members') }}">
+            <x-nav-sidebar :active="request()->routeIs('members')" href="{{ route('members') }}">
                 <i class="fa-solid fa-users fa-fw"></i>
                 <span class="text-sm">Miembros</span>
             </x-nav-sidebar>
 
-            <x-nav-sidebar :active="request()->routeIs('attendance')"
-                href="{{ route('attendance') }}">
+            <x-nav-sidebar :active="request()->routeIs('attendance')" href="{{ route('attendance') }}">
                 <i class="fa-solid fa-list-check fa-fw"></i>
                 <span class="text-sm">Registro</span>
             </x-nav-sidebar>
+            @can('admin.roles')
+                <x-nav-sidebar :active="request()->routeIs('admin.roles')" href="{{ route('admin.roles') }}">
+                    <i class="fa-solid fa-list-check fa-fw"></i>
+                    <span class="text-sm">Roles</span>
+                </x-nav-sidebar>
+            @endcan
 
         </nav>
     </div>

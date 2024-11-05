@@ -2,6 +2,9 @@
 @section('section', __('Lista de miembros'))
 
 <div>
+
+    @include('livewire.admin.modal.assign-role-user')
+
     <x-app.card>
         <div class="flex items-center justify-between gap-1 mb-2">
             <div class="w-full flex gap-2">
@@ -42,24 +45,31 @@
                         <td scope="col" class="px-6 py-3">Nombres y apellidos</td>
                         <td scope="col" class="px-6 py-3">Celular</td>
                         <td scope="col" class="px-6 py-3">Cumpleaños</td>
-                        <td scope="col" class="px-6 py-3">Bautizado</td>
+                        <td scope="col" class="px-6 py-3">F. Contrato</td>
                         <td scope="col" class="px-6 py-3 text-center">Opciones</td>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @foreach ($members as $item)
-                        <tr class="text-sm font-medium text-gray-900 even:bg-gray-100 odd:bg-white hover:bg-indigo-100">
-                            <td class="px-6 py-4">
+                        <tr class="text-sm text-gray-900 even:bg-gray-50 odd:bg-white hover:bg-gray-100">
+                            <td class="px-6 py-2">
                                 <span
-                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-500 text-white">
+                                    class="px-2 inline-flex leading-5 font-semibold rounded-full bg-gray-500 text-white">
                                     {{ $item->id }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-xs">{{ $item->firstname }}, {{ $item->lastname }}</td>
-                            <td class="px-6 py-4 text-xs">{{ $item->cellphone }}</td>
-                            <td class="px-6 py-4 text-xs">{{ $item->birthdate }}</td>
-                            <td class="px-6 py-4 text-xs">{{ $item->baptism }}</td>
-                            <td class="px-6 py-4 flex gap-1 justify-end">
+                            <td class="px-6 py-2">{{ $item->firstname }}, {{ $item->lastname }}</td>
+                            <td class="px-6 py-2">{{ $item->cellphone }}</td>
+                            <td class="px-6 py-2">{{ $item->birthdate }}</td>
+                            <td class="px-6 py-2">{{ $item->baptism }}</td>
+                            <td class="px-6 py-2 flex gap-1 justify-end">
+                                @can('admin.users.assign-role')
+                                    <x-button-tooltip hover="gray"
+                                        content="{{ $item->roles()->count() > 0 ? 'Editar Rol' : 'Asignar Rol' }}"
+                                        wire:click="showRoles({{ $item }})">
+                                        <i class="fa-solid fa-user-lock fa-fw"></i>
+                                    </x-button-tooltip>
+                                @endcan
                                 <x-mini-button rounded primary icon="pencil" wire:click="edit({{ $item }})" />
                                 @if ($active == 1)
                                     <x-mini-button rounded negative icon="x-mark"

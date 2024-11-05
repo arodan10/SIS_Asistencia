@@ -17,9 +17,7 @@ return new class extends Migration
             $table->string('mday')->nullable();
             $table->string('mtime')->nullable();
             $table->string('mplace')->nullable();
-            $table->string('motto')->nullable();
             $table->string('text')->nullable();
-            $table->string('song')->nullable();
             $table->boolean('active')->default(true);
             $table->timestamps();
         });

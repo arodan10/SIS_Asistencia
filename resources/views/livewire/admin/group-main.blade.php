@@ -36,9 +36,9 @@
                             </div>
                             <div class="col-span-2 flex items-center h-full">
                                 <div>
-                                    <div><span class="font-bold text-indigo-600">Lema: </span> {{ $group->motto }}</div>
-                                    <div><span class="font-bold text-indigo-600">Texto: </span> {{ $group->text }}</div>
-                                    <div><span class="font-bold text-indigo-600">Canto:</span> {{ $group->song }}</div>
+                                    <div><span class="font-bold text-indigo-600">Reunion: </span> {{ $group->mday }}</div>
+                                    <div><span class="font-bold text-indigo-600">Hora: </span> {{ $group->mtime }}</div>
+                                    <div><span class="font-bold text-indigo-600">Miembros: </span> {{ $group->menbers()->count() }} en total</div>
                                 </div>
                             </div>
                         </div>

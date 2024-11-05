@@ -20,7 +20,7 @@
         </div>
 
         <x-input type="date" icon="chevron-right" label="Nacimiento" wire:model="form.birthdate"/>
-        <x-input type="date" icon="chevron-right" label="Bautismo" wire:model="form.baptism"/>
+        <x-input type="date" icon="chevron-right" label="F. Contrato" wire:model="form.baptism"/>
         {{-- <x-select label="Grupo" placeholder="Seleccione" wire:model="form.group_id" :options="$groups" /> --}}
         <x-native-select label="Grupo" wire:model="form.group_id">
             <option>Seleccione opción</option>

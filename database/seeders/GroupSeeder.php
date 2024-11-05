@@ -12,40 +12,28 @@ class GroupSeeder extends Seeder{
      */
     public function run(): void{
         Group::create([
-            'name' => 'BETANIA',
-            'text' => 'Filipenses 4:13',
-            'motto' => 'Lema 1',
-            'song' => 'cancion 1',
+            'name' => 'DTI',
+            'mday' => 'Lunes',
+            'mtime' => '7:30',
+            'text' => 'Encargados de impulsar la innovación tecnológica en la organización, proporcionando herramientas y soluciones digitales que optimicen los procesos y faciliten el logro de objetivos',
         ]);
         Group::create([
-            'name' => 'EMANUEL',
-            'text' => 'Mateo 4:13',
-            'motto' => 'Lema 2',
-            'song' => 'cancion 2',
+            'name' => 'Soporte',
+            'mday' => 'Martes',
+            'mtime' => '9:30',
+            'text' => 'Equipo dedicado a brindar asistencia técnica y resolver problemas para asegurar que los sistemas funcionen de manera óptima',
         ]);
         Group::create([
-            'name' => 'EFESO',
-            'text' => 'Marcos 4:13',
-            'motto' => 'Lema 3',
-            'song' => 'cancion 3',
+            'name' => 'Redes',
+            'mday' => 'Miercoles',
+            'mtime' => '14:30',
+            'text' => 'Responsables de gestionar, mantener y asegurar las redes de comunicación, garantizando una conectividad estable y segura',
         ]);
         Group::create([
-            'name' => 'HEME AQUI',
-            'text' => 'Lucas 4:13',
-            'motto' => 'Lema 3',
-            'song' => 'cancion 3',
-        ]);
-        Group::create([
-            'name' => 'JOVENES',
-            'text' => 'Apocalipsis 4:13',
-            'motto' => 'Lema 3',
-            'song' => 'cancion 3',
-        ]);
-        Group::create([
-            'name' => 'MARANATHA',
-            'text' => 'Salmos 4:13',
-            'motto' => 'Lema 3',
-            'song' => 'cancion 3',
+            'name' => 'Administracion',
+            'mday' => 'Jueves',
+            'mtime' => '10:30',
+            'text' => 'Área encargada de gestionar recursos, supervisar operaciones y mantener el orden organizacional',
         ]);
     }
 }
