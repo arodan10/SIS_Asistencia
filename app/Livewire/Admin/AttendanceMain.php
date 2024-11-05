@@ -2,41 +2,37 @@
 
 namespace App\Livewire\Admin;
 
-use App\Events\Broadcast;
-use App\Events\DashboardSent;
-use App\Livewire\Dashboard\Main;
+use App\Imports\AttendanceImport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Attendance;
 use App\Models\Group;
 use App\Models\Member;
-use App\Models\Result;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 use WireUi\Traits\WireUiActions;
+use Livewire\WithFileUploads;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class AttendanceMain extends Component
 {
     use WithPagination;
     use WireUiActions;
+    use WithFileUploads;
+
     public $isOpenRelation = false,
         $isOpenMission = false;
-    public $search, $group_id, $members;
+    public $search, $group_id, $grupo_id, $members;
     public $attendances, $studies;
     public $date, $dateLarge;
-    #Relations vars
-    public $nrelationGroups = 0,
-        $nrelationFriends = 0;
-    #Mission vars
-    public $nmissionStudies = 0,
-        $nmissionVisits = 0,
-        $nmissionPublications = 0;
 
-    public $month;
-    public $year;
-    public $day;
+    public $archivo;
+    public $month, $mes;
+    public $year, $año;
+    public $day, $dia;
+    public $showModal = false;
 
     public function updatedMonth()
     {
@@ -86,6 +82,10 @@ class AttendanceMain extends Component
         $this->members = Member::where('group_id', $this->group_id)->get();
         $this->attendances = collect();
 
+        $this->grupo_id = $this->group_id;
+        $this->año = $this->year;
+        $this->mes = $this->month;
+        $this->dia = $this->day;
         foreach ($this->members as $member) {
             $attendances = Attendance::where('member_id', $member->id)
                 ->where('date', $this->year . '-' . $this->month . '-' . $this->day)
@@ -166,13 +166,82 @@ class AttendanceMain extends Component
         // Guardar el nuevo estado en la base de datos (opcional, según tu lógica)
         $member->save();
 
-        // Actualizar la colección de miembros
-        // $this->members = Member::where('firstname', 'LIKE', '%' . $this->search . '%')
-        //     ->where('active', true)
-        //     ->where('group_id', $this->group_id)
-        //     ->get();
-
         $this->attendances = Attendance::where('date', $this->year . '-' . $this->month . '-' . $this->day)->get();
+    }
+
+    public function import()
+    {
+        $this->validate([
+            'archivo' => 'required|file|mimes:xlsx,xls,csv',
+        ]);
+
+        // Crear instancia de AttendanceImport
+        $attendanceImport = new AttendanceImport();
+        Excel::import($attendanceImport, $this->archivo->getRealPath());
+
+        // Obtener el group_id del primer miembro importado
+        $groupId = $attendanceImport->groupId;
+
+        $this->group_id = $groupId;
+
+        $this->showModal = false;
+
+        $this->dispatch('fileUploaded');
+
+        session()->flash('success', 'Asistencias importadas correctamente.');
+    }
+
+    public function exportToPdf($group_id = null, $year, $month, $day)
+    {
+        // Consulta los miembros, o filtra si se ha pasado un ID específico
+        $miembros = Member::where('group_id', $group_id)->get();
+
+        // dd($year, $month, $day);
+        // dd($miembros);
+        if ($miembros->isEmpty()) {
+            abort(404, 'No se encontraron miembros para el criterio especificado');
+        }
+
+        $attendances = collect();
+
+        foreach ($miembros as $member) {
+            // Ajusta la consulta para obtener las asistencias específicas para el miembro y la fecha
+            $attendanceRecords = Attendance::where('member_id', $member->id)
+                ->whereDate('date', "{$year}-{$month}-{$day}")
+                ->get();
+
+            $attendances = $attendances->merge($attendanceRecords);
+        }
+
+        // Configuración de Dompdf
+        $options = new Options();
+        $options->set('defaultFont', 'Arial');
+        $dompdf = new Dompdf($options);
+
+        // Cargar la vista de la plantilla para el PDF
+        $html = view('exports.attendance_pdf', compact('attendances'))->render();
+
+        // Cargar el contenido HTML en Dompdf
+        $dompdf->loadHtml($html);
+
+        // Configurar el tamaño y la orientación del papel
+        $dompdf->setPaper('A4', 'portrait');
+
+        // Renderizar el PDF
+        $dompdf->render();
+
+        // Salida del PDF al navegador
+        $dompdf->stream('asistencias.pdf', ['Attachment' => false]);
+    }
+
+    public function exportToExcel()
+    {
+        // Lógica para exportar a Excel
+    }
+
+    public function exportToCsv()
+    {
+        // Lógica para exportar a CSV
     }
 
     public function updatingSearch()

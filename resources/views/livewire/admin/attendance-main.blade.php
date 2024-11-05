@@ -71,8 +71,6 @@
                         <div class="flex flex-wrap justify-between gap-1 items-center">
                             <!-- Selector de Fecha en el lado derecho -->
                             <div class="flex-1">
-
-
                                 <div class="flex items-center gap-2 mt-4">
                                     @if ($day)
                                         <x-native-select wire:model.live="group_id" class="w-48">
@@ -81,6 +79,117 @@
                                                 <option value="{{ $group->id }}">{{ $group->name }}</option>
                                             @endforeach
                                         </x-native-select>
+                                        <div>
+                                            <!-- Botón para abrir el modal -->
+                                            <button wire:click="$set('showModal', true)"
+                                                class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+                                                Importar
+                                            </button>
+
+                                            <!-- Modal -->
+                                            <x-modal wire:model="showModal" id="attendanceModal">
+                                                <form wire:submit.prevent="import"
+                                                    class="bg-white rounded-lg shadow-lg p-6 space-y-4"
+                                                    x-data="{ isDragging: false, fileName: '' }" x-on:drop.prevent="isDragging = false"
+                                                    x-on:dragleave="isDragging = false"
+                                                    x-on:dragover.prevent="isDragging = true">
+
+                                                    <div>
+                                                        <label class="block text-gray-700 font-semibold mb-2">Subir
+                                                            archivo de asistencia:</label>
+                                                        <div class="relative border-2 rounded-lg p-4 transition-colors duration-300"
+                                                            :class="isDragging ? 'border-blue-400 bg-blue-50' :
+                                                                'border-dashed border-gray-300'"
+                                                            x-on:drop.prevent="isDragging = false; fileName = $event.dataTransfer.files[0].name; $refs.fileInput.files = $event.dataTransfer.files;">
+
+                                                            <input type="file" wire:model="archivo"
+                                                                class="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                                                                x-ref="fileInput"
+                                                                x-on:change="fileName = $refs.fileInput.files[0]?.name" />
+
+                                                            <div class="text-center text-gray-500">
+                                                                <span class="text-sm" x-show="!fileName">Haz clic o
+                                                                    arrastra un archivo aquí</span>
+                                                                <span class="text-sm font-semibold text-blue-600"
+                                                                    x-show="fileName">Archivo cargado: <strong
+                                                                        x-text="fileName"></strong></span>
+                                                            </div>
+
+                                                            <div class="text-center text-gray-600 font-semibold mt-2"
+                                                                wire:loading wire:target="file">
+                                                                <span>Cargando archivo...</span>
+                                                            </div>
+                                                        </div>
+                                                        @error('archivo')
+                                                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                                        @enderror
+                                                    </div>
+
+                                                    <div class="mt-4">
+                                                        <button type="submit" wire:loading.attr="disabled"
+                                                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                                            wire:loading.class="bg-blue-400 cursor-not-allowed">
+                                                            <span wire:loading.remove>Importar Asistencias</span>
+                                                            <span wire:loading>Importando...</span>
+                                                        </button>
+                                                    </div>
+
+                                                    @if (session()->has('success'))
+                                                        <div
+                                                            class="text-green-600 bg-green-100 p-3 rounded-lg text-center font-semibold mt-4">
+                                                            {{ session('success') }}
+                                                        </div>
+                                                    @endif
+                                                </form>
+                                            </x-modal>
+                                        </div>
+
+                                        <div class="relative inline-block text-left">
+                                            <div>
+                                                <button type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                                        id="menu-button" aria-expanded="true" aria-haspopup="true">
+                                                    Exportar
+                                                    <!-- Icono de flecha hacia abajo -->
+                                                    <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06 0L10 10.293l3.71-3.07a.75.75 0 111.02 1.1l-4 3.333a.75.75 0 01-.99 0l-4-3.333a.75.75 0 010-1.1z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+
+                                            <div class="absolute right-0 z-10 mt-2 w-20 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1" id="menu-options">
+                                                <div class="py-1" role="none">
+                                                    <a target="_blank" href="{{ route('attendances.export.pdf', ['group_id' => $grupo_id ?? null, 'year' => $año ?? null, 'month' => $mes ?? null, 'day' => $dia ?? null]) }}" class="block w-full text-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        PDF
+                                                    </a>
+                                                    <button wire:click="exportToExcel" class="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                                                        XLSX
+                                                    </button>
+                                                    <button wire:click="exportToCsv" class="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                                                        CSV
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <script>
+                                            // Script para mostrar y ocultar el menú
+                                            document.addEventListener('DOMContentLoaded', () => {
+                                                const button = document.getElementById('menu-button');
+                                                const menu = document.getElementById('menu-options');
+
+                                                button.addEventListener('click', () => {
+                                                    menu.classList.toggle('hidden');
+                                                });
+
+                                                // Cierra el menú al hacer clic fuera de él
+                                                window.addEventListener('click', (event) => {
+                                                    if (!button.contains(event.target) && !menu.contains(event.target)) {
+                                                        menu.classList.add('hidden');
+                                                    }
+                                                });
+                                            });
+                                        </script>
+
                                         <x-button sm primary label="Crear Asistencia" icon="plus"
                                             wire:click="createAttendance" />
                                     @endif

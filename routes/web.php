@@ -28,4 +28,9 @@ Route::middleware([
     Route::get('/attendance',AttendanceMain::class)->name('attendance');
     Route::get('/members',MemberMain::class)->name('members');
     Route::get('/groups',GroupMain::class)->name('groups');
+
+    // Route::get('/export/attendances/pdf', [AttendanceMain::class, 'exportToPdf'])->name('attendances.export.pdf');
+    // Route::get('/export/attendances/pdf/{group_id?}', [AttendanceMain::class, 'exportToPdf'])->name('attendances.export.pdf');
+    Route::get('/export/attendances/pdf/{group_id?}/{year?}/{month?}/{day?}', [AttendanceMain::class, 'exportToPdf'])
+    ->name('attendances.export.pdf');
 });
