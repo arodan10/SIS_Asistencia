@@ -10,6 +10,6 @@ class GroupForm extends Form{
 
     #[Rule('required')]
     public $name;
-    public $mday,$mtime,$mplace,$motto,$text,$song,$church_id=1;
+    public $mday,$mtime,$mplace,$text;
 
 }

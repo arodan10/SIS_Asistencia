@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->date('birthdate')->nullable();
             $table->date('baptism')->nullable();
-            $table->enum('position',['MIEMBRO','MAESTRO(A)','ASOCIADO(A)'])->default('MIEMBRO');
+            // $table->enum('position',['MIEMBRO','MAESTRO(A)','ASOCIADO(A)'])->default('MIEMBRO');
             $table->boolean('active')->default(true);
             $table->unsignedBigInteger('group_id');
             $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');

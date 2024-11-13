@@ -10,7 +10,7 @@ class MemberForm extends Form
 {
     #[Rule('required')]
     public $firstname,$lastname,$document;
-    public $address,$cellphone,$email,$birthdate,$baptism,$position,$group_id;
+    public $address,$cellphone,$email,$birthdate,$baptism,$group_id;
 
 
 }

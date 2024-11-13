@@ -28,12 +28,12 @@
             <option value="{{$group->id}}">{{$group->name}}</option>
             @endforeach
         </x-native-select>
-        <x-native-select label="Tipo" wire:model="form.position">
+        {{-- <x-native-select label="Tipo" wire:model="form.position">
             <option>Seleccione opción</option>
             <option value="MIEMBRO">MIEMBRO</option>
             <option value="MAESTRO(A)">MAESTRO(A)</option>
             <option value="ASOCIADO(A)">ASOCIADO(A)</option>
-        </x-native-select>
+        </x-native-select> --}}
         {{-- <x-select label="Tipo" placeholder="Seleccione" :options="['MAESTRO(A)','ASOCIADO(A)']" wire:model="form.position" /> --}}
     </div>
 
