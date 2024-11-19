@@ -14,6 +14,7 @@ return new class extends Migration{
             $table->string('status');
             $table->integer('study');
             $table->date('date');
+            $table->string('justification_reason')->nullable();
             $table->unsignedBigInteger('member_id');
             $table->foreign('member_id')->references('id')->on('members')->onDelete('cascade');
             $table->timestamps();

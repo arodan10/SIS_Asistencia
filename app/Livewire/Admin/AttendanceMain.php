@@ -33,10 +33,31 @@ class AttendanceMain extends Component
     public $year, $año;
     public $day, $dia;
 
+
+    public $selectedAttendanceId;
+    public $justificationReason;
+
+    public $showJustificationModal = false;
+
+    public $showImportModal = false;
+
+    public $isImportModalOpen = false;
+    public $isJustificationModalOpen = false;
+
+
     public $meses = [
-        1 => 'ene', 2 => 'feb', 3 => 'mar', 4 => 'abr',
-        5 => 'may', 6 => 'jun', 7 => 'jul', 8 => 'ago',
-        9 => 'sep', 10 => 'oct', 11 => 'nov', 12 => 'dic'
+        1 => 'ene',
+        2 => 'feb',
+        3 => 'mar',
+        4 => 'abr',
+        5 => 'may',
+        6 => 'jun',
+        7 => 'jul',
+        8 => 'ago',
+        9 => 'sep',
+        10 => 'oct',
+        11 => 'nov',
+        12 => 'dic'
     ];
 
     public $showModal = false;
@@ -78,6 +99,7 @@ class AttendanceMain extends Component
         $this->month = Carbon::now('America/Lima')->month;
         $this->year = Carbon::now('America/Lima')->year;
         $this->day = Carbon::now('America/Lima')->day;
+        $this->fetchAttendances();
     }
 
     public function render()
@@ -85,6 +107,8 @@ class AttendanceMain extends Component
         $firstDayOfMonth = Carbon::create($this->year, $this->month, 1);
         $totalDays = $firstDayOfMonth->daysInMonth;
         $startDay = $firstDayOfMonth->dayOfWeek; // 0=Domingo
+        // Filtrar asistencias con estado 'J' (justificaciones)
+
 
         $this->members = Member::where('group_id', $this->group_id)->get();
         $this->attendances = collect();
@@ -107,6 +131,7 @@ class AttendanceMain extends Component
             ->get();
         return view('livewire.admin.attendance-main', compact('groups', 'leaders', 'totalDays', 'startDay'));
     }
+
 
     public function createAttendance()
     {
@@ -152,29 +177,48 @@ class AttendanceMain extends Component
 
     public function toggleAttendanceStatus($memberId)
     {
-        // Buscar el miembro por su ID
-        $member = Attendance::where('member_id', $memberId)
-            ->where('date', $this->year . '-' . $this->month . '-' . $this->day)
+        // Buscar el registro de asistencia por miembro y fecha
+        $attendance = Attendance::where('member_id', $memberId)
+            ->where('date', "{$this->year}-{$this->month}-{$this->day}")
             ->first();
 
-        // Cambiar el estado según el ciclo (P -> T -> F -> P)
-        switch ($member->status) {
-            case 'P':
-                $member->status = 'T';
-                break;
-            case 'T':
-                $member->status = 'F';
-                break;
-            default:
-                $member->status = 'P';
-                break;
+        if ($attendance) {
+            // Cambiar el estado cíclicamente (P -> T -> F -> J -> P)
+            switch ($attendance->status) {
+                case 'P':
+                    $attendance->status = 'T';
+                    break;
+                case 'T':
+                    $attendance->status = 'F';
+                    break;
+                case 'F':
+                    $attendance->status = 'J';
+                    break;
+                default:
+                    $attendance->status = 'P';
+                    break;
+            }
+
+            // Guardar cambios
+            $attendance->save();
+
+            // Si cambia a "Justificación", abre el modal de justificación
+            if ($attendance->status === 'J') {
+                $this->selectedAttendanceId = $attendance->id;
+                $this->justificationReason = $attendance->justification_reason; // Cargar motivo si ya existe
+                $this->isJustificationModalOpen = true; // Mostrar el modal de justificación
+            }
         }
 
-        // Guardar el nuevo estado en la base de datos (opcional, según tu lógica)
-        $member->save();
-
-        $this->attendances = Attendance::where('date', $this->year . '-' . $this->month . '-' . $this->day)->get();
+        // Actualizar la lista de asistencias
+        $this->attendances = Attendance::whereDate('date', "{$this->year}-{$this->month}-{$this->day}")
+            ->whereIn('member_id', $this->members->pluck('id'))
+            ->get();
     }
+
+
+
+
 
     public function import()
     {
@@ -182,21 +226,32 @@ class AttendanceMain extends Component
             'archivo' => 'required|file|mimes:xlsx,xls,csv',
         ]);
 
-        // Crear instancia de AttendanceImport
-        $attendanceImport = new AttendanceImport();
-        Excel::import($attendanceImport, $this->archivo->getRealPath());
+        try {
+            // Crear instancia de AttendanceImport
+            $attendanceImport = new AttendanceImport();
+            Excel::import($attendanceImport, $this->archivo->getRealPath());
 
-        // Obtener el group_id del primer miembro importado
-        $groupId = $attendanceImport->groupId;
+            // Obtener el group_id del primer miembro importado
+            $groupId = $attendanceImport->groupId;
 
-        $this->group_id = $groupId;
+            $this->group_id = $groupId;
 
-        $this->showModal = false;
+            // Cerrar el modal de importación
+            $this->isImportModalOpen = false;
 
-        $this->dispatch('fileUploaded');
+            // Enviar un evento al frontend (si es necesario)
+            $this->dispatch('fileUploaded');
 
-        session()->flash('success', 'Asistencias importadas correctamente.');
+            session()->flash('success', 'Asistencias importadas correctamente.');
+            $this->notification()->success('Importación Completa', 'Las asistencias fueron importadas correctamente.');
+        } catch (\Exception $e) {
+            $this->notification()->error('Error en la Importación', $e->getMessage());
+        }
+
+        // Limpiar el archivo cargado
+        $this->reset(['archivo']);
     }
+
 
     public function exportToPdf($group_id, $year, $month, $day)
     {
@@ -258,5 +313,48 @@ class AttendanceMain extends Component
     public function updatingSearch()
     {
         $this->resetPage();
+    }
+
+
+    // ----------------------
+    public function fetchAttendances()
+    {
+        $this->members = Member::where('group_id', $this->group_id)->get();
+        $this->attendances = Attendance::whereDate('date', "{$this->year}-{$this->month}-{$this->day}")
+            ->whereIn('member_id', $this->members->pluck('id'))
+            ->get();
+    }
+
+
+    public function setJustificationAttendanceId($attendanceId)
+    {
+        $this->selectedAttendanceId = $attendanceId;
+    }
+    public function saveJustification()
+    {
+        $this->validate([
+            'justificationReason' => 'required|string|max:255',
+        ]);
+
+        $attendance = Attendance::find($this->selectedAttendanceId);
+
+        if ($attendance) {
+            $attendance->justification_reason = $this->justificationReason;
+            $attendance->save();
+
+            $this->reset(['justificationReason', 'selectedAttendanceId', 'isJustificationModalOpen']);
+            $this->notification()->success('Justificación Registrada', 'El motivo ha sido guardado correctamente.');
+        }
+    }
+
+
+    public function openImportModal()
+    {
+        $this->isImportModalOpen = true;
+    }
+
+    public function closeImportModal()
+    {
+        $this->isImportModalOpen = false;
     }
 }

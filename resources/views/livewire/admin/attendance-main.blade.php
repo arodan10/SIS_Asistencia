@@ -99,21 +99,20 @@
                                 </x-dropdown>
                             @endif
 
-                            <x-button wire:click="$set('showModal', true)" label="Importar" orange
+                            <x-button wire:click="$set('isImportModalOpen', true)" label="Importar" orange
                                 right-icon="arrow-up-tray" />
 
-                            <!-- Modal -->
-                            <x-modal wire:model="showModal" id="attendanceModal">
+                            <!-- Modal de Importación -->
+                            <x-modal wire:model.defer="isImportModalOpen" id="attendanceModal">
                                 <form wire:submit.prevent="import" class="bg-white rounded-lg shadow-lg p-6 space-y-4"
                                     x-data="{ isDragging: false, fileName: '' }" x-on:drop.prevent="isDragging = false"
                                     x-on:dragleave="isDragging = false" x-on:dragover.prevent="isDragging = true">
 
                                     <div>
-                                        <label class="block text-gray-700 font-semibold mb-2">Subir
-                                            archivo de asistencia:</label>
+                                        <label class="block text-gray-700 font-semibold mb-2">Subir archivo de
+                                            asistencia:</label>
                                         <div class="relative border-2 rounded-lg p-4 transition-colors duration-300"
-                                            :class="isDragging ? 'border-blue-400 bg-blue-50' :
-                                                'border-dashed border-gray-300'"
+                                            :class="isDragging ? 'border-blue-400 bg-blue-50' : 'border-dashed border-gray-300'"
                                             x-on:drop.prevent="isDragging = false; fileName = $event.dataTransfer.files[0].name; $refs.fileInput.files = $event.dataTransfer.files;">
 
                                             <input type="file" wire:model="archivo"
@@ -122,15 +121,15 @@
                                                 x-on:change="fileName = $refs.fileInput.files[0]?.name" />
 
                                             <div class="text-center text-gray-500">
-                                                <span class="text-sm" x-show="!fileName">Haz clic o
-                                                    arrastra un archivo aquí</span>
+                                                <span class="text-sm" x-show="!fileName">Haz clic o arrastra un archivo
+                                                    aquí</span>
                                                 <span class="text-sm font-semibold text-blue-600"
                                                     x-show="fileName">Archivo cargado: <strong
                                                         x-text="fileName"></strong></span>
                                             </div>
 
                                             <div class="text-center text-gray-600 font-semibold mt-2" wire:loading
-                                                wire:target="file">
+                                                wire:target="archivo">
                                                 <span>Cargando archivo...</span>
                                             </div>
                                         </div>
@@ -156,6 +155,8 @@
                                     @endif
                                 </form>
                             </x-modal>
+
+
                         </div>
                     </div>
                     <div class="grid grid-cols-9 items-center gap-2">
@@ -183,46 +184,59 @@
                     </div>
                 @else
                     <table class="w-full table-auto">
+                        <thead>
+                            <tr class="text-sm text-gray-500">
+                                <th>#</th>
+                                <th>Documento</th>
+                                <th>Nombre</th>
+                                <th>Fecha Nac.</th>
+                                <th>Estado</th>
+                                <th>Justificación</th>
+                            </tr>
+                        </thead>
                         <tbody class="divide-y divide-gray-200">
-                            @foreach ($attendances as $item => $attendance)
+                            @foreach ($attendances as $index => $attendance)
                                 <tr class="text-sm text-gray-900 hover:bg-gray-100">
-                                    <td class="px-3 py-2">
-                                        {{ $item + 1 }}
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        {{ $attendance->member->document }}
-                                    </td>
+                                    <td class="px-3 py-2">{{ $index + 1 }}</td>
+                                    <td class="px-3 py-2">{{ $attendance->member->document }}</td>
                                     <td class="px-3 py-2">{{ $attendance->member->firstname }}
-                                        {{ $attendance->member->lastname }}
-                                    </td>
+                                        {{ $attendance->member->lastname }}</td>
                                     <td class="px-3 py-2">{{ $attendance->member->birthdate }}</td>
                                     <td class="px-3 py-2">
                                         <div class="text-center">
                                             @php
-                                                $color = match ($attendance->status ?? null) {
+                                                $color = match ($attendance->status) {
                                                     'P' => 'text-green-500',
                                                     'T' => 'text-yellow-500',
                                                     'F' => 'text-red-500',
-                                                    default => 'text-gray-300',
+                                                    'J' => 'text-blue-500',
+                                                    default => 'text-gray-400',
                                                 };
-                                                $statusText = match ($attendance->status ?? null) {
+                                                $statusText = match ($attendance->status) {
                                                     'P' => 'Presente',
                                                     'T' => 'Tarde',
                                                     'F' => 'Falta',
+                                                    'J' => 'Justificado',
                                                     default => 'Sin Estado',
                                                 };
-                                                $icon = match ($attendance->status ?? null) {
+                                                $icon = match ($attendance->status) {
                                                     'P' => 'fa-check',
-                                                    'T' => 'fa-regular fa-clock',
+                                                    'T' => 'fa-clock',
                                                     'F' => 'fa-times',
+                                                    'J' => 'fa-file',
                                                     default => 'fa-question',
                                                 };
                                             @endphp
                                             <button wire:click="toggleAttendanceStatus({{ $attendance->member->id }})"
                                                 class="p-1 rounded-lg font-semibold {{ $color }} active:bg-gray-200 transition">
                                                 <i class="fa {{ $icon }} fa-fw fa-lg"></i>
+
                                             </button>
                                         </div>
+                                    </td>
+
+                                    <td class="px-3 py-2">
+                                        {{ $attendance->justification_reason ?? 'No especificada' }}
                                     </td>
                                 </tr>
                             @endforeach
@@ -231,6 +245,7 @@
                 @endif
             </div>
 
+
             <div class="mt-2">
                 @if (!$attendances->count())
                     <x-alert title="* No existe ningun registro coincidente" secondary />
@@ -238,4 +253,28 @@
             </div>
         </x-app.card>
     </div>
+
+
+    <!-- Modal de Justificación -->
+    <x-modal wire:model.defer="isJustificationModalOpen" class="bg-white shadow-lg">
+        <div class="p-6 space-y-4 bg-white rounded-lg">
+            <!-- Título del Modal -->
+            <h3 class="text-lg font-bold text-gray-700 text-center">Motivo de Justificación</h3>
+
+            <div>
+                <label class="block text-gray-600 font-semibold mb-2">Escriba el motivo:</label>
+                <textarea wire:model="justificationReason" class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500" rows="3" placeholder="Escriba el motivo aquí..."></textarea>
+                @error('justificationReason')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="flex justify-between items-center">
+                <x-button flat label="Cancelar" class="w-1/3 bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-300" wire:click="$set('isJustificationModalOpen', false)" />
+                <x-button primary label="Guardar" class="w-1/3 bg-blue-500 hover:bg-blue-600 text-white focus:ring-blue-300" wire:click="saveJustification" />
+            </div>
+        </div>
+    </x-modal>
+
+
 </div>
